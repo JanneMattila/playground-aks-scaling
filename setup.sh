@@ -30,7 +30,7 @@ az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/P
 az provider register --namespace Microsoft.ContainerService
 
 # Remove extension in case conflicting previews
-az extension remove --name aks-preview
+# az extension remove --name aks-preview
 
 aadAdmingGroup=$(az ad group list --display-name $aadAdminGroupContains --query [].objectId -o tsv)
 echo $aadAdmingGroup
@@ -44,7 +44,7 @@ vnetid=$(az network vnet create -g $resourceGroupName --name $vnetName \
 echo $vnetid
 
 subnetaksid=$(az network vnet subnet create -g $resourceGroupName --vnet-name $vnetName \
-  --name $subnetAks --address-prefixes 10.2.0.0/24 \
+  --name $subnetAks --address-prefixes 10.2.0.0/20 \
   --query id -o tsv)
 echo $subnetaksid
 
@@ -64,15 +64,17 @@ echo $myip
 #  --enable-private-cluster
 #  --private-dns-zone None
 
-# Choose correct OS disk
-osDisk="Ephemeral"
+# Choose correct OS disk and VM size
+# osDisk="Ephemeral" # Requires Standard_D8ds_v4 or similar
+# vmSize="Standard_D8ds_v4"
 osDisk="Managed"
+vmSize="Standard_D4ds_v4"
 
 az aks create -g $resourceGroupName -n $aksName \
  --max-pods 50 --network-plugin azure \
- --node-count 1 --enable-cluster-autoscaler --min-count 1 --max-count 3 \
- --node-osdisk-type Ephemeral \
- --node-vm-size Standard_D4ds_v4 \
+ --node-count 1 --enable-cluster-autoscaler --min-count 1 --max-count 2 \
+ --node-osdisk-type $osDisk \
+ --node-vm-size $vmSize \
  --kubernetes-version 1.21.2 \
  --enable-addons monitoring \
  --enable-aad \
@@ -85,6 +87,30 @@ az aks create -g $resourceGroupName -n $aksName \
  --assign-identity $identityid \
  --api-server-authorized-ip-ranges $myip \
  -o table 
+
+nodepool1="nodepool1"
+az aks nodepool scale -g $resourceGroupName --cluster-name $aksName \
+  --name $nodepool1 \
+  --node-count 2
+
+nodepool2="nodepool2"
+az aks nodepool add -g $resourceGroupName --cluster-name $aksName \
+  --name $nodepool2 \
+  --node-count 3 \
+  --node-osdisk-type $osDisk \
+  --node-vm-size $vmSize \
+  --scale-down-mode Deallocate \
+  --node-osdisk-type Managed \
+  --max-pods 150
+
+az aks nodepool scale -g $resourceGroupName --cluster-name $aksName \
+  --name $nodepool2 \
+  --node-count 2
+
+az aks nodepool update -g $resourceGroupName --cluster-name $aksName \
+  --name $nodepool2 \
+  --node-count 2 \
+  --scale-down-mode Delete
 
 ###################################################################
 # Enable current ip
