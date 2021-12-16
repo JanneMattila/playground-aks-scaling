@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-fs-tester-demo
+  namespace: demos
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp-fs-tester-demo
+  template:
+    metadata:
+      labels:
+        app: webapp-fs-tester-demo
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - image: jannemattila/webapp-fs-tester:1.1.7
+        imagePullPolicy: Always
+        name: webapp-fs-tester-demo
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 150m
+            memory: 150Mi
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        volumeMounts:
+          - name: empty
+            mountPath: /mnt/empty
+          - name: hostpath
+            mountPath: /mnt/hostpath
+          - name: nfs
+            mountPath: /mnt/nfs
+          - name: smb
+            mountPath: /mnt/smb
+          # - name: netapp-nfs
+          #   mountPath: /mnt/netapp-nfs
+      volumes:
+      - name: empty
+        emptyDir: {}
+      - name: hostpath
+        hostPath:
+          path: /mnt
+      - name: nfs
+        persistentVolumeClaim:
+          claimName: nfs-pvc
+      - name: smb
+        persistentVolumeClaim:
+          claimName: smb-pvc
+      # - name: netapp-nfs
+      #   persistentVolumeClaim:
+      #     claimName: netapp-nfs-pvc
