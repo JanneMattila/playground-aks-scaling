@@ -105,9 +105,17 @@ az aks nodepool add -g $resourceGroupName --cluster-name $aksName \
   --labels usage=tempworkloads \
   --max-pods 150
 
-az aks nodepool scale -g $resourceGroupName --cluster-name $aksName \
+# az aks nodepool delete -g $resourceGroupName --cluster-name $aksName --name $nodepool2
+
+time az aks nodepool scale -g $resourceGroupName --cluster-name $aksName \
   --name $nodepool2 \
-  --node-count 2
+  --node-count 1 \
+  -o none
+
+time az aks nodepool scale -g $resourceGroupName --cluster-name $aksName \
+  --name $nodepool2 \
+  --node-count 3 \
+  -o none
 
 az aks nodepool update -g $resourceGroupName --cluster-name $aksName \
   --name $nodepool2 \
@@ -140,6 +148,10 @@ kubectl describe deployment -n demos
 
 kubectl get pod -n demos
 kubectl get pod -n demos -o custom-columns=NAME:'{.metadata.name}',NODE:'{.spec.nodeName}'
+
+# Get number of pods per node
+kubectl get pod -n demos --no-headers=true -o custom-columns=NODE:'{.spec.nodeName}' | sort | uniq -c | sort -n
+
 pod1=$(kubectl get pod -n demos -o name | head -n 1)
 echo $pod1
 

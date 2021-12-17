@@ -4,7 +4,7 @@ metadata:
   name: catch-the-banana
   namespace: demos
 spec:
-  replicas: 3
+  replicas: 30
   selector:
     matchLabels:
       app: catch-the-banana
