@@ -1,24 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webapp-fs-tester-demo
+  name: catch-the-banana
   namespace: demos
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: webapp-fs-tester-demo
+      app: catch-the-banana
   template:
     metadata:
       labels:
-        app: webapp-fs-tester-demo
+        app: catch-the-banana
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
+        usage: tempworkloads
+      tolerations:
+      - key: "usage"
+        operator: "Equal"
+        value: "tempworkloads"
+        effect: "NoSchedule"
       containers:
-      - image: jannemattila/webapp-fs-tester:1.1.7
-        imagePullPolicy: Always
-        name: webapp-fs-tester-demo
+      - image: jannemattila/catch-the-banana:1.0.57
+        name: catch-the-banana
         resources:
           requests:
             cpu: 100m
@@ -30,29 +35,3 @@ spec:
         - containerPort: 80
           name: http
           protocol: TCP
-        volumeMounts:
-          - name: empty
-            mountPath: /mnt/empty
-          - name: hostpath
-            mountPath: /mnt/hostpath
-          - name: nfs
-            mountPath: /mnt/nfs
-          - name: smb
-            mountPath: /mnt/smb
-          # - name: netapp-nfs
-          #   mountPath: /mnt/netapp-nfs
-      volumes:
-      - name: empty
-        emptyDir: {}
-      - name: hostpath
-        hostPath:
-          path: /mnt
-      - name: nfs
-        persistentVolumeClaim:
-          claimName: nfs-pvc
-      - name: smb
-        persistentVolumeClaim:
-          claimName: smb-pvc
-      # - name: netapp-nfs
-      #   persistentVolumeClaim:
-      #     claimName: netapp-nfs-pvc

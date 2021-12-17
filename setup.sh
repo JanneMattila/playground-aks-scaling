@@ -101,6 +101,8 @@ az aks nodepool add -g $resourceGroupName --cluster-name $aksName \
   --node-vm-size $vmSize \
   --scale-down-mode Deallocate \
   --node-osdisk-type Managed \
+  --node-taints "usage=tempworkloads:NoSchedule" \
+  --labels usage=tempworkloads \
   --max-pods 150
 
 az aks nodepool scale -g $resourceGroupName --cluster-name $aksName \
@@ -125,15 +127,19 @@ sudo az aks install-cli
 az aks get-credentials -n $aksName -g $resourceGroupName --overwrite-existing
 
 kubectl get nodes
+kubectl get nodes --show-labels=true
+kubectl get nodes -L agentpool,usage
 
-# Create namespace
-kubectl apply -f namespace.yaml
-kubectl apply -f demos
+# Deploy all items from demos namespace
+kubectl apply -f demos/namespace.yaml
+kubectl apply -f demos/deployment.yaml
+kubectl apply -f demos/service.yaml
 
 kubectl get deployment -n demos
 kubectl describe deployment -n demos
 
 kubectl get pod -n demos
+kubectl get pod -n demos -o custom-columns=NAME:'{.metadata.name}',NODE:'{.spec.nodeName}'
 pod1=$(kubectl get pod -n demos -o name | head -n 1)
 echo $pod1
 
