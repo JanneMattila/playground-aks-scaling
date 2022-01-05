@@ -2,6 +2,17 @@
 
 Playground for AKS and scaling
 
+## Usage
+
+1. Clone this repository to your own machine
+2. Open Workspace
+  - Use WSL in Windows
+  - Requires Bash
+3. Open [setup.sh](setup.sh) to walk through steps to deploy this demo environment
+  - Execute different script steps one-by-one (hint: use [shift-enter](https://github.com/JanneMattila/some-questions-and-some-answers/blob/master/q%26a/vs_code.md#automation-tip-shift-enter))
+
+## Discussion topics
+
 [Scaling options for applications in Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/concepts-scale)
 
 - [Cluster autoscaler](https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler)
