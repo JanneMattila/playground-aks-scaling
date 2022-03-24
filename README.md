@@ -32,12 +32,14 @@ to achieve that:
   - **[Limitations:](https://docs.microsoft.com/en-us/azure/aks/start-stop-cluster?tabs=azure-cli#limitations)**
     - The customer provisioned PrivateEndpoints linked to private cluster need to be deleted and recreated again when you start a stopped AKS cluster
     - When you start your cluster, **the IP address of your API server may change**
-- [Stop and start User node pools](https://docs.microsoft.com/en-us/azure/aks/start-stop-nodepools)
+- [Stop and start User node pools](https://docs.microsoft.com/en-us/azure/aks/start-stop-nodepools) _Preview_
   - You still have `System node pools` running
   - It takes *n* minutes to start node pool
 - [Scale User node pools to zero](https://docs.microsoft.com/en-us/azure/aks/scale-cluster#scale-user-node-pools-to-0)
   - You still have `System node pools` running
   - It takes *n* minutes to scale to target node pool size
+  - You can use `Scale-down Mode` [deallocate](https://docs.microsoft.com/en-us/azure/aks/scale-down-mode) (_Preview_)
+    to improve scale up time
 
 In case of [Private AKS](https://docs.microsoft.com/en-us/azure/aks/private-clusters),
 you need to also consider your DNS infrastructure support for your selected option.
