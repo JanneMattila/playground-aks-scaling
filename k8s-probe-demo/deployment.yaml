@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-probe-demo
+  namespace: k8s-probe-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-probe-demo
+  template:
+    metadata:
+      labels:
+        app: k8s-probe-demo
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+        usage: tempworkloads
+      containers:
+      - image: jannemattila/k8s-probe-demo:1.0.7
+        name: k8s-probe-demo
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 150m
+            memory: 150Mi
+        livenessProbe:
+          httpGet:
+            path: /api/HealthCheck/Liveness
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 10
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            path: /api/HealthCheck/Readiness
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 10
+          failureThreshold: 2
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        env:
+          - name: webhook
+            value: ""
+          - name: livenessCheck
+            value: "true"
+          - name: readinessCheck
+            value: "true"
