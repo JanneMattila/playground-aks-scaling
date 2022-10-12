@@ -17,7 +17,7 @@ Playground for AKS and scaling
 
 - [Cluster autoscaler](https://learn.microsoft.com/en-us/azure/aks/cluster-autoscaler)
 - [Horizontal pod autoscaler (HPA)](https://learn.microsoft.com/en-us/azure/aks/tutorial-kubernetes-scale?tabs=azure-cli)
-- [Vertical Pod Autoscaler (VPA)](https://learn.microsoft.com/en-us/azure/aks/vertical-pod-autoscaler)
+- [Vertical Pod autoscaler (VPA)](https://learn.microsoft.com/en-us/azure/aks/vertical-pod-autoscaler)
 - [Virtual nodes](https://learn.microsoft.com/en-us/azure/aks/virtual-nodes-cli)
 
 ## Re-create vs. start+stop vs. scale to zero
